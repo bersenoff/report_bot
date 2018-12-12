@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "axios": "^0.18.0",
     "dotenv": "^6.2.0",
+    "moment": "^2.22.2",
     "mysql": "^2.16.0",
     "node-telegram-bot-api": "^0.30.0",
     "socks5-https-client": "^1.2.1"
