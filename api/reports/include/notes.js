@@ -10,7 +10,7 @@ module.exports = async () => {
       COUNT(*) AS total
     FROM ??
     GROUP BY date
-    ORDER BY date LIMIT 30
+    ORDER BY date DESC LIMIT 30
   `,
     ["reportdb.dataumbnotes"]
   );
