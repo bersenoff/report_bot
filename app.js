@@ -1,7 +1,9 @@
 require("dotenv").config();
 const Agent = require("socks5-https-client/lib/Agent");
 const TelegramBot = require("node-telegram-bot-api");
-const axios = require("axios");
+
+global.api = require("./api");
+global.db = require("./classes/db");
 
 const bot = new TelegramBot(process.env.TOKEN, {
   polling: true,
@@ -14,6 +16,13 @@ const bot = new TelegramBot(process.env.TOKEN, {
   }
 });
 
-bot.onText(/\/test/, data => {
-  bot.sendMessage(data.chat.id, "Work it!");
+bot.onText(/\/ping/, data => {
+  // проверка ответа сервера
+  bot.sendMessage(data.id.chat, "Все впорядке, я живой :)");
+});
+
+bot.onText(/\/notes/, async data => {
+  // отчет по заметкам
+  const msg = await api.reports.notes();
+  bot.sendMessage(data.chat.id, msg);
 });
