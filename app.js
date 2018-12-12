@@ -16,13 +16,30 @@ const bot = new TelegramBot(process.env.TOKEN, {
   }
 });
 
-bot.onText(/\/ping/, data => {
-  // проверка ответа сервера
-  bot.sendMessage(data.id.chat, "Все впорядке, я живой :)");
+bot.on("message", async data => {
+  switch (data.text) {
+    case "/help":
+      bot.sendMessage(data.chat.id, await api.system.help());
+      break;
+    case "/notes":
+      understand(data.chat.id);
+      bot.sendMessage(data.chat.id, await api.reports.notes());
+      finish(data.chat.id);
+      break;
+    case "/tickets":
+      understand(data.chat.id);
+      bot.sendMessage(data.chat.id, await api.reports.tickets());
+      finish(data.chat.id);
+      break;
+    default:
+      bot.sendMessage(data.chat.id, "К сожалению, я тебя не понимаю 😔");
+  }
 });
 
-bot.onText(/\/notes/, async data => {
-  // отчет по заметкам
-  const msg = await api.reports.notes();
-  bot.sendMessage(data.chat.id, msg);
-});
+const understand = chatId => {
+  bot.sendMessage(chatId, "Запрос принят, сейчас сформирую данные 😌");
+};
+
+const finish = chatId => {
+  bot.sendMessage(chatId, "Готово, всегда рад помочь 😉");
+};

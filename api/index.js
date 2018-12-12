@@ -1,3 +1,4 @@
 module.exports = {
-  reports: require("./reports")
+  reports: require("./reports"),
+  system: require("./system")
 };
