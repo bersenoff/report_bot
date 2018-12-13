@@ -1,5 +1,8 @@
 module.exports = {
   cuvo: require("./include/cuvo"),
   notes: require("./include/notes"),
-  tickets: require("./include/tickets")
+  omnichat: require("./include/omnichat"),
+  reportday: require("./include/reportday"),
+  tickets: require("./include/tickets"),
+  traffic: require("./include/traffic")
 };

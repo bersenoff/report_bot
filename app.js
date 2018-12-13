@@ -24,23 +24,43 @@ bot.on("message", async data => {
       bot.sendMessage(data.chat.id, await api.system.help());
       break;
     case "/notes":
-      understand(data.chat.id);
-      bot.sendMessage(data.chat.id, await api.reports.notes());
-      finish(data.chat.id);
+      await understand(data.chat.id);
+      await bot.sendMessage(data.chat.id, await api.reports.notes());
+      await finish(data.chat.id);
       break;
     case "/tickets":
-      understand(data.chat.id);
-      bot.sendMessage(data.chat.id, await api.reports.tickets());
-      finish(data.chat.id);
+      await understand(data.chat.id);
+      await bot.sendMessage(data.chat.id, await api.reports.tickets());
+      await finish(data.chat.id);
       break;
     case "/cuvo":
-      understand(data.chat.id);
-      bot.sendMessage(data.chat.id, await api.reports.cuvo());
-      finish(data.chat.id);
+      await understand(data.chat.id);
+      await bot.sendMessage(data.chat.id, await api.reports.cuvo());
+      await finish(data.chat.id);
+      break;
+    case "/omnichat":
+      await understand(data.chat.id);
+      await bot.sendMessage(data.chat.id, await api.reports.omnichat());
+      await finish(data.chat.id);
+      break;
+    case "/reportday":
+      await understand(data.chat.id);
+      await bot.sendMessage(data.chat.id, await api.reports.reportday());
+      await finish(data.chat.id);
+      break;
+    case "/traffic":
+      await understand(data.chat.id);
+      await bot.sendMessage(data.chat.id, await api.reports.traffic());
+      await finish(data.chat.id);
       break;
     default:
       if (!dialog(data.chat.id, data.text)) {
-        bot.sendMessage(data.chat.id, "К сожалению, я тебя не понимаю 😔");
+        bot.sendMessage(
+          data.chat.id,
+          temp.outgoing.other[
+            Math.floor(Math.random() * temp.outgoing.other.length)
+          ]
+        );
       }
       break;
   }
