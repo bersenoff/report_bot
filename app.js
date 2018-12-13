@@ -38,6 +38,21 @@ bot.on("message", async data => {
       await bot.sendMessage(data.chat.id, await api.reports.cuvo());
       await finish(data.chat.id);
       break;
+    case "/omnichat":
+      await understand(data.chat.id);
+      await bot.sendMessage(data.chat.id, await api.reports.omnichat());
+      await finish(data.chat.id);
+      break;
+    case "/reportday":
+      await understand(data.chat.id);
+      await bot.sendMessage(data.chat.id, await api.reports.reportday());
+      await finish(data.chat.id);
+      break;
+    case "/traffic":
+      await understand(data.chat.id);
+      await bot.sendMessage(data.chat.id, await api.reports.traffic());
+      await finish(data.chat.id);
+      break;
     default:
       if (!dialog(data.chat.id, data.text)) {
         bot.sendMessage(
