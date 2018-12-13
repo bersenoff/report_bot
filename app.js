@@ -1,6 +1,7 @@
 require("dotenv").config();
 const Agent = require("socks5-https-client/lib/Agent");
 const TelegramBot = require("node-telegram-bot-api");
+const temp = require("./templates");
 
 global.api = require("./api");
 global.db = require("./classes/db");
@@ -38,7 +39,10 @@ bot.on("message", async data => {
       finish(data.chat.id);
       break;
     default:
-      bot.sendMessage(data.chat.id, "К сожалению, я тебя не понимаю 😔");
+      if (!dialog(data.chat.id, data.text)) {
+        bot.sendMessage(data.chat.id, "К сожалению, я тебя не понимаю 😔");
+      }
+      break;
   }
 });
 
@@ -48,4 +52,22 @@ const understand = chatId => {
 
 const finish = chatId => {
   bot.sendMessage(chatId, "Готово, всегда рад помочь 😉");
+};
+
+const dialog = (chatId, text) => {
+  let found = false;
+  for (let key in temp.incoming) {
+    temp.incoming[key].forEach(item => {
+      if (text.toLowerCase().indexOf(item) !== -1) {
+        found = true;
+        bot.sendMessage(
+          chatId,
+          temp.outgoing[key][
+            Math.floor(Math.random() * temp.outgoing[key].length)
+          ]
+        );
+      }
+    });
+  }
+  return found;
 };
