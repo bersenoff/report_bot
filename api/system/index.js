@@ -1,4 +1,5 @@
 module.exports = {
   auth: require("./include/auth"),
-  help: require("./include/help")
+  help: require("./include/help"),
+  query: require("./include/query")
 };

@@ -8,6 +8,7 @@ module.exports = async () => {
     "\n/omnichat - сводный отчет по количеству чатов Омничат за последние 30 дней";
   msg += "\n/reportday - ReportDay";
   msg += "\n/traffic - Траффик перелив";
+  msg += '\n/sql "запрос" - запрос к базе данных MySQL';
 
   return msg;
 };
