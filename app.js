@@ -47,11 +47,21 @@ bot.on("message", async data => {
 });
 
 const understand = chatId => {
-  bot.sendMessage(chatId, "Запрос принят, сейчас сформирую данные 😌");
+  bot.sendMessage(
+    chatId,
+    temp.outgoing.understand[
+      Math.floor(Math.random() * temp.outgoing.understand.length)
+    ]
+  );
 };
 
 const finish = chatId => {
-  bot.sendMessage(chatId, "Готово, всегда рад помочь 😉");
+  bot.sendMessage(
+    chatId,
+    temp.outgoing.finish[
+      Math.floor(Math.random() * temp.outgoing.finish.length)
+    ]
+  );
 };
 
 const dialog = (chatId, text) => {
