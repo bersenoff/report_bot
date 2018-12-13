@@ -20,7 +20,7 @@ const bot = new TelegramBot(process.env.TOKEN, {
 
 bot.on("message", async data => {
   if (await api.system.auth(data.chat)) {
-    switch (data.text) {
+    switch (data.text.toLowerCase()) {
       case "/help":
         bot.sendMessage(data.chat.id, await api.system.help());
         break;
