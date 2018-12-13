@@ -4,6 +4,7 @@ const TelegramBot = require("node-telegram-bot-api");
 
 global.api = require("./api");
 global.db = require("./classes/db");
+global.moment = require("moment");
 
 const bot = new TelegramBot(process.env.TOKEN, {
   polling: true,
@@ -29,6 +30,11 @@ bot.on("message", async data => {
     case "/tickets":
       understand(data.chat.id);
       bot.sendMessage(data.chat.id, await api.reports.tickets());
+      finish(data.chat.id);
+      break;
+    case "/cuvo":
+      understand(data.chat.id);
+      bot.sendMessage(data.chat.id, await api.reports.cuvo());
       finish(data.chat.id);
       break;
     default:

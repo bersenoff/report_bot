@@ -1,6 +1,4 @@
 module.exports = async () => {
-  const moment = require("moment");
-
   const data = (await db.query(
     `
         SELECT
