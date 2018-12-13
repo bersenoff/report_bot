@@ -2,9 +2,13 @@
   "dependencies": {
     "axios": "^0.18.0",
     "dotenv": "^6.2.0",
+    "fs": "0.0.1-security",
     "moment": "^2.22.2",
     "mysql": "^2.16.0",
+    "mysql2": "^1.6.4",
     "node-telegram-bot-api": "^0.30.0",
+    "path": "^0.12.7",
+    "sequelize": "^4.42.0",
     "socks5-https-client": "^1.2.1"
   }
 }
