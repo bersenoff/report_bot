@@ -30,8 +30,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       telegram_username: {
         type: Sequelize.STRING,
-        allowNull: false,
-        notEmpty: true
+        allowNull: true
       },
       allow: {
         type: Sequelize.BOOLEAN,
