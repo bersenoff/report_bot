@@ -19,50 +19,57 @@ const bot = new TelegramBot(process.env.TOKEN, {
 });
 
 bot.on("message", async data => {
-  switch (data.text) {
-    case "/help":
-      bot.sendMessage(data.chat.id, await api.system.help());
-      break;
-    case "/notes":
-      await understand(data.chat.id);
-      await bot.sendMessage(data.chat.id, await api.reports.notes());
-      await finish(data.chat.id);
-      break;
-    case "/tickets":
-      await understand(data.chat.id);
-      await bot.sendMessage(data.chat.id, await api.reports.tickets());
-      await finish(data.chat.id);
-      break;
-    case "/cuvo":
-      await understand(data.chat.id);
-      await bot.sendMessage(data.chat.id, await api.reports.cuvo());
-      await finish(data.chat.id);
-      break;
-    case "/omnichat":
-      await understand(data.chat.id);
-      await bot.sendMessage(data.chat.id, await api.reports.omnichat());
-      await finish(data.chat.id);
-      break;
-    case "/reportday":
-      await understand(data.chat.id);
-      await bot.sendMessage(data.chat.id, await api.reports.reportday());
-      await finish(data.chat.id);
-      break;
-    case "/traffic":
-      await understand(data.chat.id);
-      await bot.sendMessage(data.chat.id, await api.reports.traffic());
-      await finish(data.chat.id);
-      break;
-    default:
-      if (!dialog(data.chat.id, data.text)) {
-        bot.sendMessage(
-          data.chat.id,
-          temp.outgoing.other[
-            Math.floor(Math.random() * temp.outgoing.other.length)
-          ]
-        );
-      }
-      break;
+  if (await api.system.auth(data.chat)) {
+    switch (data.text) {
+      case "/help":
+        bot.sendMessage(data.chat.id, await api.system.help());
+        break;
+      case "/notes":
+        await understand(data.chat.id);
+        await bot.sendMessage(data.chat.id, await api.reports.notes());
+        await finish(data.chat.id);
+        break;
+      case "/tickets":
+        await understand(data.chat.id);
+        await bot.sendMessage(data.chat.id, await api.reports.tickets());
+        await finish(data.chat.id);
+        break;
+      case "/cuvo":
+        await understand(data.chat.id);
+        await bot.sendMessage(data.chat.id, await api.reports.cuvo());
+        await finish(data.chat.id);
+        break;
+      case "/omnichat":
+        await understand(data.chat.id);
+        await bot.sendMessage(data.chat.id, await api.reports.omnichat());
+        await finish(data.chat.id);
+        break;
+      case "/reportday":
+        await understand(data.chat.id);
+        await bot.sendMessage(data.chat.id, await api.reports.reportday());
+        await finish(data.chat.id);
+        break;
+      case "/traffic":
+        await understand(data.chat.id);
+        await bot.sendMessage(data.chat.id, await api.reports.traffic());
+        await finish(data.chat.id);
+        break;
+      default:
+        if (!dialog(data.chat.id, data.text)) {
+          bot.sendMessage(
+            data.chat.id,
+            temp.outgoing.other[
+              Math.floor(Math.random() * temp.outgoing.other.length)
+            ]
+          );
+        }
+        break;
+    }
+  } else {
+    bot.sendMessage(
+      data.chat.id,
+      "Я вас не знаю, поэтому буду игнорировать 😊"
+    );
   }
 });
 
