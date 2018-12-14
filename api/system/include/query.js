@@ -1,6 +1,5 @@
 module.exports = async (data, bot) => {
   const fs = require("fs");
-  const DBRead = new (require(appRoot + "/classes/DB"))(true);
 
   const segments = data.text.toLowerCase().split('"');
   let sql = segments[1];
@@ -8,6 +7,14 @@ module.exports = async (data, bot) => {
   try {
     if (typeof sql === "undefined") {
       throw new Error("Вы не ввели sql-запрос 😊");
+    }
+
+    const ban = ["insert", "update", "delete", "drop", "truncate"];
+
+    for (let value of ban) {
+      if (sql.indexOf(value) !== -1) {
+        throw new Error("Мне разрешено выполнять только SELECT-запросы 😊");
+      }
     }
 
     if (sql.indexOf("limit") === -1) {
