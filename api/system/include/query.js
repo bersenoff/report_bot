@@ -27,7 +27,7 @@ module.exports = async msg => {
   let data = [];
 
   try {
-    data = (await db.query(sql)).data;
+    data = (await DB.query(sql)).data;
   } catch (err) {
     res = err.message;
     return res;

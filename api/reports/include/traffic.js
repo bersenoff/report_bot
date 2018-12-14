@@ -1,19 +1,28 @@
-module.exports = async () => {
-  const data = (await db.query(
+module.exports = async (chat, bot) => {
+  const fs = require("fs");
+
+  const data = (await DB.query(
     `
-          SELECT DISTINCT date
+          SELECT DISTINCT 
+            DATE_FORMAT(date, '%d.%m.%Y') AS \`Дата\`
           FROM ??
           ORDER BY date DESC
-          LIMIT 30
+          LIMIT 7
       `,
     ["reportdb.dataacdcms"]
   )).data;
 
-  let msg = "Трафик перелив:\n";
+  const title = "Трафик перелив";
 
-  for (let row of data) {
-    msg += `\n${moment(row.date).format("DD.MM.YYYY")}`;
+  try {
+    const image = await new Table(title, data).render();
+    const options = {
+      filename: title,
+      contentType: "image/png"
+    };
+    bot.sendPhoto(chat.id, fs.readFileSync(image), {}, options);
+    bot.finish(chat.id);
+  } catch (err) {
+    bot.sendMessage(chat.id, err.message);
   }
-
-  return msg;
 };

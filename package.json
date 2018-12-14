@@ -9,6 +9,7 @@
     "node-telegram-bot-api": "^0.30.0",
     "path": "^0.12.7",
     "sequelize": "^4.42.0",
-    "socks5-https-client": "^1.2.1"
+    "socks5-https-client": "^1.2.1",
+    "webshot": "^0.18.0"
   }
 }
