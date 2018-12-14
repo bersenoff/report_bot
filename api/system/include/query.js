@@ -22,7 +22,7 @@ module.exports = async (data, bot) => {
     }
 
     const title = "Результаты запроса";
-    const result = (await DBRead.query(sql)).data;
+    const result = (await DB.query(sql)).data;
     const image = await new Table(title, result).render();
     const options = {
       filename: title,
