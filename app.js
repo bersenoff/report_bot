@@ -53,7 +53,7 @@ bot.on("message", async data => {
       default:
         if (data.text.toLowerCase().indexOf("/sql") !== -1) {
           await api.system.query(data, bot);
-        } else if (!dialog(data.chat.id, data.text)) {
+        } else if (!bot.dialog(data.chat.id, data.text)) {
           bot.sendMessage(
             data.chat.id,
             temp.outgoing.other[
