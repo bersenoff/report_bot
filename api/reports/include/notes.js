@@ -2,24 +2,33 @@
  * Отчет по заметкам
  */
 
-module.exports = async () => {
-  const data = (await db.query(
+module.exports = async (chat, bot) => {
+  const fs = require("fs");
+
+  const data = (await DB.query(
     `
     SELECT
-      date AS date, 
-      COUNT(*) AS total
+      DATE_FORMAT(date, '%d.%m.%Y') AS \`Дата\`, 
+      COUNT(*) AS \`Количество\`
     FROM ??
     GROUP BY date
-    ORDER BY date DESC LIMIT 30
+    ORDER BY date DESC 
+    LIMIT 7
   `,
     ["reportdb.dataumbnotes"]
   )).data;
 
-  let msg = "Сводный отчет по количеству заметок за последние 30 дней:\n";
+  const title = "Сводный отчет по количеству заметок за последнюю неделю";
 
-  for (let row of data) {
-    msg += `\n${moment(row.date).format("DD.MM.YYYY")} - ${row.total}`;
+  try {
+    const image = await new Table(title, data).render();
+    const options = {
+      filename: title,
+      contentType: "image/png"
+    };
+    bot.sendPhoto(chat.id, fs.readFileSync(image), {}, options);
+    bot.finish(chat.id);
+  } catch (err) {
+    bot.sendMessage(chat.id, err.message);
   }
-
-  return msg;
 };
