@@ -3,8 +3,10 @@ const Agent = require("socks5-https-client/lib/Agent");
 const TelegramBot = require("node-telegram-bot-api");
 const temp = require("./templates");
 
+global.appRoot = __dirname;
 global.api = require("./api");
-global.db = require("./classes/db");
+global.DB = require("./classes/DB");
+global.Table = require("./classes/Table");
 global.moment = require("moment");
 
 const bot = new TelegramBot(process.env.TOKEN, {
@@ -25,34 +27,28 @@ bot.on("message", async data => {
         bot.sendMessage(data.chat.id, await api.system.help());
         break;
       case "/notes":
-        await understand(data.chat.id);
-        await bot.sendMessage(data.chat.id, await api.reports.notes());
-        await finish(data.chat.id);
+        await bot.understand(data.chat.id);
+        await api.reports.notes(data.chat, bot);
         break;
       case "/tickets":
-        await understand(data.chat.id);
-        await bot.sendMessage(data.chat.id, await api.reports.tickets());
-        await finish(data.chat.id);
+        await bot.understand(data.chat.id);
+        await api.reports.tickets(data.chat, bot);
         break;
       case "/cuvo":
-        await understand(data.chat.id);
-        await bot.sendMessage(data.chat.id, await api.reports.cuvo());
-        await finish(data.chat.id);
+        await bot.understand(data.chat.id);
+        await api.reports.cuvo(data.chat, bot);
         break;
       case "/omnichat":
-        await understand(data.chat.id);
-        await bot.sendMessage(data.chat.id, await api.reports.omnichat());
-        await finish(data.chat.id);
+        await bot.understand(data.chat.id);
+        await api.reports.omnichat(data.chat, bot);
         break;
       case "/reportday":
-        await understand(data.chat.id);
-        await bot.sendMessage(data.chat.id, await api.reports.reportday());
-        await finish(data.chat.id);
+        await bot.understand(data.chat.id);
+        await api.reports.reportday(data.chat, bot);
         break;
       case "/traffic":
-        await understand(data.chat.id);
-        await bot.sendMessage(data.chat.id, await api.reports.traffic());
-        await finish(data.chat.id);
+        await bot.understand(data.chat.id);
+        await api.reports.traffic(data.chat, bot);
         break;
       default:
         if (data.text.toLowerCase().indexOf("/sql") !== -1) {
@@ -75,7 +71,7 @@ bot.on("message", async data => {
   }
 });
 
-const understand = chatId => {
+bot.understand = chatId => {
   bot.sendMessage(
     chatId,
     temp.outgoing.understand[
@@ -84,7 +80,7 @@ const understand = chatId => {
   );
 };
 
-const finish = chatId => {
+bot.finish = chatId => {
   bot.sendMessage(
     chatId,
     temp.outgoing.finish[
@@ -93,7 +89,7 @@ const finish = chatId => {
   );
 };
 
-const dialog = (chatId, text) => {
+bot.dialog = (chatId, text) => {
   let found = false;
   for (let key in temp.incoming) {
     temp.incoming[key].forEach(item => {

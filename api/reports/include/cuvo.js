@@ -1,22 +1,29 @@
-module.exports = async () => {
-  const data = (await db.query(
+module.exports = async (chat, bot) => {
+  const fs = require("fs");
+  const data = (await DB.query(
     `
         SELECT
-            date AS date,
-            SUM(\`1q1ev\`+\`1q2ev\`+\`1q3ev\`+\`1q4ev\`+\`1q5ev\`) AS total
+            DATE_FORMAT(date, '%d.%m.%Y') AS \`Дата\`,
+            SUM(\`1q1ev\`+\`1q2ev\`+\`1q3ev\`+\`1q4ev\`+\`1q5ev\`) AS \`Количество\`
         FROM ??
         GROUP BY date
         ORDER BY date DESC
-        LIMIT 30
+        LIMIT 7
     `,
     ["reportdb.datacuvocommon2q"]
   )).data;
 
-  let msg = "Сводный отчет по количеству оценок за последние 30 дней:\n";
+  const title = "Сводный отчет по количеству оценок за последнюю неделю";
 
-  for (let row of data) {
-    msg += `\n${moment(row.date).format("DD.MM.YYYY")} - ${row.total}`;
+  try {
+    const image = await new Table(title, data).render();
+    const options = {
+      filename: title,
+      contentType: "image/png"
+    };
+    bot.sendPhoto(chat.id, fs.readFileSync(image), {}, options);
+    bot.finish(chat.id);
+  } catch (err) {
+    bot.sendMessage(chat.id, err.message);
   }
-
-  return msg;
 };

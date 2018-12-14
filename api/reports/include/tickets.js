@@ -1,22 +1,30 @@
-module.exports = async () => {
-  const data = (await db.query(
+module.exports = async (chat, bot) => {
+  const fs = require("fs");
+
+  const data = (await DB.query(
     `
         SELECT
-            DATE(closeddatetime) AS date,
-            COUNT(*) AS total
+            DATE_FORMAT(DATE(closeddatetime), '%d.%m.%Y') AS \`Дата\`,
+            COUNT(*) AS \`Количество\`
         FROM ??
         GROUP BY DATE(closeddatetime)
         ORDER BY DATE(closeddatetime) DESC
-        LIMIT 30
+        LIMIT 7
     `,
     ["reportdb.databpmaccidents"]
   )).data;
 
-  let msg = "Сводный отчет по количеству тикетов за последние 30 дней:\n";
+  const title = "Сводный отчет по количеству тикетов за последнюю неделю";
 
-  for (let row of data) {
-    msg += `\n${moment(row.date).format("DD.MM.YYYY")} - ${row.total}`;
+  try {
+    const image = await new Table(title, data).render();
+    const options = {
+      filename: title,
+      contentType: "image/png"
+    };
+    bot.sendPhoto(chat.id, fs.readFileSync(image), {}, options);
+    bot.finish(chat.id);
+  } catch (err) {
+    bot.sendMessage(chat.id, err.message);
   }
-
-  return msg;
 };
