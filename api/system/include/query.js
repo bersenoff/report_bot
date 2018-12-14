@@ -17,7 +17,7 @@ module.exports = async (data, bot) => {
       }
     }
 
-    if (sql.indexOf("limit") === -1) {
+    if (sql.indexOf("select") !== -1 && sql.indexOf("limit") === -1) {
       sql += " limit 30";
     }
 
