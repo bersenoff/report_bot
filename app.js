@@ -5,7 +5,7 @@ const temp = require("./templates");
 
 global.appRoot = __dirname;
 global.api = require("./api");
-global.DB = require("./classes/DB");
+global.DB = new (require("./classes/DB"))();
 global.Table = require("./classes/Table");
 global.moment = require("moment");
 
@@ -52,7 +52,7 @@ bot.on("message", async data => {
         break;
       default:
         if (data.text.toLowerCase().indexOf("/sql") !== -1) {
-          bot.sendMessage(data.chat.id, await api.system.query(data.text));
+          await api.system.query(data, bot);
         } else if (!dialog(data.chat.id, data.text)) {
           bot.sendMessage(
             data.chat.id,

@@ -1,57 +1,29 @@
-module.exports = async msg => {
-  const segments = msg.toLowerCase().split('"');
+module.exports = async (data, bot) => {
+  const fs = require("fs");
+  const DBRead = new (require(appRoot + "/classes/DB"))(true);
+
+  const segments = data.text.toLowerCase().split('"');
   let sql = segments[1];
 
-  let res = "";
-
-  if (typeof sql === "undefined") {
-    res = "Вы не ввели sql-запрос 😊";
-    return res;
-  }
-
-  let allow = true;
-
-  if (sql.indexOf("insert") !== -1) allow = false;
-  if (sql.indexOf("update") !== -1) allow = false;
-  if (sql.indexOf("delete") !== -1) allow = false;
-
-  if (!allow) {
-    res = "Разрешены только SELECT-запросы 😊";
-    return res;
-  }
-
-  if (sql.indexOf("limit") === -1) {
-    sql += " LIMIT 30";
-  }
-
-  let data = [];
-
   try {
-    data = (await DB.query(sql)).data;
-  } catch (err) {
-    res = err.message;
-    return res;
-  }
-
-  if (data.length) {
-    res = "Результат запроса:\n";
-    res += "\n[";
-
-    for (let row of data) {
-      res += "\nRowDataPacket";
-      res += "\n  {";
-
-      for (let key in row) {
-        res += `\n   ${key}: '${row[key]}'`;
-      }
-
-      res += "\n  },";
+    if (typeof sql === "undefined") {
+      throw new Error("Вы не ввели sql-запрос 😊");
     }
 
-    res += "\n]";
-  } else {
-    res = "Результат запроса пуст 😊";
-  }
+    if (sql.indexOf("limit") === -1) {
+      sql += " limit 30";
+    }
 
-  return res;
+    const title = "Результаты запроса";
+    const result = (await DBRead.query(sql)).data;
+    const image = await new Table(title, result).render();
+    const options = {
+      filename: title,
+      contentType: "image/png"
+    };
+    await bot.sendPhoto(data.chat.id, fs.readFileSync(image), {}, options);
+    await bot.finish(data.chat.id);
+  } catch (err) {
+    bot.sendMessage(data.chat.id, err.message);
+  }
 };

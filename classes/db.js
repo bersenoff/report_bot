@@ -3,15 +3,23 @@
  * @author Nikita Bersenev
  */
 
-class DB {
-  constructor() {
+module.exports = class DB {
+  constructor(readonly = false) {
     const mysql = require("mysql");
+
+    let user = process.env.MYSQL_USER;
+    let password = process.env.MYSQL_PASSWORD;
+
+    if (readonly) {
+      user = process.env.MYSQL_READ_USER;
+      password = process.env.MYSQL_READ_PASSWORD;
+    }
 
     this.pool = mysql.createPool({
       connectionLimit: 10,
       host: process.env.MYSQL_HOST,
-      user: process.env.MYSQL_USER,
-      password: process.env.MYSQL_PASSWORD,
+      user,
+      password,
       dateStrings: true
     });
   }
@@ -32,6 +40,4 @@ class DB {
       });
     });
   }
-}
-
-module.exports = new DB();
+};
