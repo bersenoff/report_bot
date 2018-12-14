@@ -26,8 +26,8 @@ module.exports = async (chat, bot) => {
       filename: title,
       contentType: "image/png"
     };
-    bot.sendPhoto(chat.id, fs.readFileSync(image), {}, options);
-    bot.finish(chat.id);
+    await bot.sendPhoto(chat.id, fs.readFileSync(image), {}, options);
+    await bot.finish(chat.id);
   } catch (err) {
     bot.sendMessage(chat.id, err.message);
   }
