@@ -76,6 +76,8 @@ module.exports = class Table {
       }
     };
 
+    console.log(html);
+
     return new Promise((resolve, reject) => {
       this.webshot(html, path, options, err => {
         if (err) reject(err);
