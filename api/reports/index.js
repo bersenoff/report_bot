@@ -1,5 +1,6 @@
 module.exports = {
   cuvo: require("./include/cuvo"),
+  history: require("./include/history"),
   notes: require("./include/notes"),
   omnichat: require("./include/omnichat"),
   reportday: require("./include/reportday"),
