@@ -50,6 +50,10 @@ bot.on("message", async data => {
         await bot.understand(data.chat.id);
         await api.reports.traffic(data.chat, bot);
         break;
+      case "/history":
+        await bot.understand(data.chat.id);
+        await api.reports.history(data.chat, bot);
+        break;
       default:
         if (data.text.toLowerCase().indexOf("/sql") !== -1) {
           await bot.understand(data.chat.id);
