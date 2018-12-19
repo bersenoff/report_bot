@@ -56,7 +56,7 @@ bot.on("message", async data => {
         break;
       case "/check":
         await bot.hard(data.chat.id);
-        await api.reports.history(data.chat, bot);
+        await api.reports.check(data.chat, bot);
         break;
       default:
         if (data.text.toLowerCase().indexOf("/sql") !== -1) {
