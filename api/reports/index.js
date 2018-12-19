@@ -1,4 +1,5 @@
 module.exports = {
+  check: require("./include/check"),
   cuvo: require("./include/cuvo"),
   history: require("./include/history"),
   notes: require("./include/notes"),

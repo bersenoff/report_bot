@@ -54,6 +54,10 @@ bot.on("message", async data => {
         await bot.understand(data.chat.id);
         await api.reports.history(data.chat, bot);
         break;
+      case "/check":
+        await bot.hard(data.chat.id);
+        await api.reports.history(data.chat, bot);
+        break;
       default:
         if (data.text.toLowerCase().indexOf("/sql") !== -1) {
           await bot.understand(data.chat.id);
@@ -82,6 +86,13 @@ bot.understand = chatId => {
     temp.outgoing.understand[
       Math.floor(Math.random() * temp.outgoing.understand.length)
     ]
+  );
+};
+
+bot.hard = chatId => {
+  bot.sendMessage(
+    chatId,
+    temp.outgoing.hard[Math.floor(Math.random() * temp.outgoing.hard.length)]
   );
 };
 
