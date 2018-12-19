@@ -4,6 +4,8 @@
  */
 
 module.exports = async (chat, bot) => {
+  const fs = require("fs");
+
   // Период проверки данных
   const period = [
     moment()
