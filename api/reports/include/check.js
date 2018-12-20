@@ -35,10 +35,11 @@ module.exports = async (chat, bot) => {
 
   const today = moment().format("DD.MM.YYYY");
 
+  bot.sendMessage(chat.id, "Проверяю заметки...");
   const notes = (await DB.query(
     `
         SELECT
-          DATE_FORMAT(date, '%d.%m.%Y') AS \`date\`,
+          DATE_FORMAT(date, '%d.%m.%Y') AS \`date_str\`,
           COUNT(*) AS \`count\`
         FROM ??
         GROUP BY date
@@ -47,11 +48,13 @@ module.exports = async (chat, bot) => {
       `,
     ["reportdb.dataumbnotes"]
   )).data;
+  console.log(notes);
 
+  bot.sendMessage(chat.id, "Проверяю тикеты...");
   const tickets = (await DB.query(
     `
           SELECT
-              DATE_FORMAT(DATE(closeddatetime), '%d.%m.%Y') AS \`date\`,
+              DATE_FORMAT(DATE(closeddatetime), '%d.%m.%Y') AS \`date_str\`,
               COUNT(*) AS \`count\`
           FROM ??
           GROUP BY DATE(closeddatetime)
@@ -60,11 +63,13 @@ module.exports = async (chat, bot) => {
       `,
     ["reportdb.databpmaccidents"]
   )).data;
+  console.log(tickets);
 
+  bot.sendMessage(chat.id, "Проверяю CuVo...");
   const cuvo = (await DB.query(
     `
           SELECT
-              DATE_FORMAT(date, '%d.%m.%Y') AS \`date\`,
+              DATE_FORMAT(date, '%d.%m.%Y') AS \`date_str\`,
               SUM(\`1q1ev\`+\`1q2ev\`+\`1q3ev\`+\`1q4ev\`+\`1q5ev\`) AS \`count\`
           FROM ??
           GROUP BY date
@@ -73,6 +78,7 @@ module.exports = async (chat, bot) => {
       `,
     ["reportdb.datacuvocommon2q"]
   )).data;
+  console.log(cuvo);
 
   let days_notes = period.length;
   let sum_notes = 0;
@@ -93,7 +99,7 @@ module.exports = async (chat, bot) => {
   let cuvo_status_info = "";
 
   for (let row of notes) {
-    if (row.date !== today) {
+    if (row.date_str !== today) {
       sum_notes += row.count;
     } else {
       days_notes--;
@@ -101,7 +107,7 @@ module.exports = async (chat, bot) => {
   }
 
   for (let row of tickets) {
-    if (row.date !== today) {
+    if (row.date_str !== today) {
       sum_tickets += row.count;
     } else {
       days_tickets--;
@@ -109,7 +115,7 @@ module.exports = async (chat, bot) => {
   }
 
   for (let row of cuvo) {
-    if (row.date !== today) {
+    if (row.date_str !== today) {
       sum_cuvo += row.count;
     } else {
       days_cuvo--;
@@ -125,8 +131,8 @@ module.exports = async (chat, bot) => {
     let cuvo_deviation = 0;
 
     for (let row of notes) {
-      if (row.date !== today) {
-        if (row.date === date) {
+      if (row.date_str !== today) {
+        if (row.date_str === date) {
           notes_deviation =
             Math.round(
               Math.abs(1 - row.count / (sum_notes / days_notes)) * 100
@@ -142,8 +148,8 @@ module.exports = async (chat, bot) => {
     }
 
     for (let row of tickets) {
-      if (row.date !== today) {
-        if (row.date === date) {
+      if (row.date_str !== today) {
+        if (row.date_str === date) {
           tickets_deviation =
             Math.round(
               Math.abs(1 - row.count / (sum_tickets / days_tickets)) * 100
@@ -159,8 +165,8 @@ module.exports = async (chat, bot) => {
     }
 
     for (let row of cuvo) {
-      if (row.date !== today) {
-        if (row.date === date) {
+      if (row.date_str !== today) {
+        if (row.date_str === date) {
           cuvo_deviation =
             Math.round(Math.abs(1 - row.count / (sum_cuvo / days_cuvo)) * 100) /
             100;
@@ -219,17 +225,17 @@ module.exports = async (chat, bot) => {
   }
 
   if (notes_status_codes.indexOf(2) !== -1)
-    notes_status = "<span style='color: red'>Ошибка</span>";
+    notes_status = "<span style='color: red'>Проблема</span>";
   else if (notes_status_codes.indexOf(1) !== -1)
     notes_status = "<span style='color: orange'>Внимание</span>";
 
   if (tickets_status_codes.indexOf(2) !== -1)
-    tickets_status = "<span style='color: red'>Ошибка</span>";
+    tickets_status = "<span style='color: red'>Проблема</span>";
   else if (tickets_status_codes.indexOf(1) !== -1)
     tickets_status = "<span style='color: orange'>Внимание</span>";
 
   if (cuvo_status_codes.indexOf(2) !== -1)
-    cuvo_status = "<span style='color: red'>Ошибка</span>";
+    cuvo_status = "<span style='color: red'>Проблема</span>";
   else if (cuvo_status_codes.indexOf(1) !== -1)
     cuvo_status = "<span style='color: orange'>Внимание</span>";
 
