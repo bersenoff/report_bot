@@ -48,7 +48,6 @@ module.exports = async (chat, bot) => {
       `,
     ["reportdb.dataumbnotes"]
   )).data;
-  console.log(notes);
 
   bot.sendMessage(chat.id, "Проверяю тикеты...");
   const tickets = (await DB.query(
@@ -63,7 +62,6 @@ module.exports = async (chat, bot) => {
       `,
     ["reportdb.databpmaccidents"]
   )).data;
-  console.log(tickets);
 
   bot.sendMessage(chat.id, "Проверяю CuVo...");
   const cuvo = (await DB.query(
@@ -78,7 +76,6 @@ module.exports = async (chat, bot) => {
       `,
     ["reportdb.datacuvocommon2q"]
   )).data;
-  console.log(cuvo);
 
   let days_notes = period.length;
   let sum_notes = 0;
