@@ -186,11 +186,11 @@ module.exports = async (chat, bot) => {
 
     if (notes_code === 2) {
       if (notes_status_info.length)
-        notes_status_info += `\n\nОтсутствуют данные за ${date}`;
+        notes_status_info += `<br />Отсутствуют данные за ${date}`;
       else notes_status_info += `Отсутствуют данные за ${date}`;
     } else if (notes_code === 1) {
       if (notes_status_info.length)
-        notes_status_info += `\n\nЗа ${date} отклонение от среднего значения более 30% (${notes_deviation *
+        notes_status_info += `<br />За ${date} отклонение от среднего значения более 30% (${notes_deviation *
           100}%)`;
       else
         notes_status_info += `За ${date} отклонение от среднего значения более 30% (${notes_deviation *
@@ -199,11 +199,11 @@ module.exports = async (chat, bot) => {
 
     if (tickets_code === 2) {
       if (tickets_status_info.length)
-        tickets_status_info += `\n\nОтсутствуют данные за ${date}`;
+        tickets_status_info += `<br />Отсутствуют данные за ${date}`;
       else tickets_status_info += `Отсутствуют данные за ${date}`;
     } else if (tickets_code === 1) {
       if (tickets_status_info.length)
-        tickets_status_info += `\n\nЗа ${date} отклонение от среднего значения более 30% (${tickets_deviation *
+        tickets_status_info += `<br />За ${date} отклонение от среднего значения более 30% (${tickets_deviation *
           100}%)`;
       else
         tickets_status_info += `За ${date} отклонение от среднего значения более 30% (${tickets_deviation *
@@ -212,11 +212,11 @@ module.exports = async (chat, bot) => {
 
     if (cuvo_code === 2) {
       if (cuvo_status_info.length)
-        cuvo_status_info += `\n\nОтсутствуют данные за ${date}`;
+        cuvo_status_info += `<br />Отсутствуют данные за ${date}`;
       else cuvo_status_info += `Отсутствуют данные за ${date}`;
     } else if (cuvo_code === 1) {
       if (cuvo_status_info.length)
-        cuvo_status_info += `\n\nЗа ${date} отклонение от среднего значения более 30% (${cuvo_deviation *
+        cuvo_status_info += `<br />За ${date} отклонение от среднего значения более 30% (${cuvo_deviation *
           100}%)`;
       else
         cuvo_status_info += `За ${date} отклонение от среднего значения более 30% (${cuvo_deviation *
