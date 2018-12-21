@@ -34,6 +34,9 @@ module.exports = async (chat, bot) => {
   const valid_deviation = 0.3;
 
   const today = moment().format("DD.MM.YYYY");
+  const yesterday = moment()
+    .subtract(1, "d")
+    .format("DD.MM.YYYY");
 
   bot.sendMessage(chat.id, "Проверяю заметки...");
   const notes = (await DB.query(
@@ -44,9 +47,9 @@ module.exports = async (chat, bot) => {
         FROM ??
         GROUP BY date
         ORDER BY date DESC
-        LIMIT ${period.length + 1}
+        LIMIT ?
       `,
-    ["reportdb.dataumbnotes"]
+    ["reportdb.dataumbnotes", period.length + 1]
   )).data;
 
   bot.sendMessage(chat.id, "Проверяю тикеты...");
@@ -58,9 +61,9 @@ module.exports = async (chat, bot) => {
           FROM ??
           GROUP BY DATE(closeddatetime)
           ORDER BY DATE(closeddatetime) DESC
-          LIMIT ${period.length + 1}
+          LIMIT ?
       `,
-    ["reportdb.databpmaccidents"]
+    ["reportdb.databpmaccidents", period.length + 1]
   )).data;
 
   bot.sendMessage(chat.id, "Проверяю CuVo...");
@@ -72,9 +75,47 @@ module.exports = async (chat, bot) => {
           FROM ??
           GROUP BY date
           ORDER BY date DESC
-          LIMIT ${period.length + 1}
+          LIMIT ?
       `,
-    ["reportdb.datacuvocommon2q"]
+    ["reportdb.datacuvocommon2q", period.length + 1]
+  )).data;
+
+  bot.sendMessage(chat.id, "Проверяю Омничат...");
+  const omnichat = (await DB.query(
+    `
+        SELECT
+            DATE_FORMAT(date, '%d.%m.%Y') AS \`date_str\`,
+            COUNT(*) AS \`count\`
+        FROM ??
+        GROUP BY date
+        ORDER BY date DESC
+        LIMIT ?
+    `,
+    ["reportdb.dataomnichat", period.length + 1]
+  )).data;
+
+  bot.sendMessage(chat.id, "Проверяю ReportDay...");
+  const reportday = (await DB.query(
+    `
+        SELECT DISTINCT 
+          DATE_FORMAT(date, '%d.%m.%Y') AS \`date_str\`
+        FROM ??
+        ORDER BY date DESC 
+        LIMIT ?
+      `,
+    ["reportdb.dataskillday", period.length + 1]
+  )).data;
+
+  bot.sendMessage(chat.id, "Проверяю трафик перелив...");
+  const traffic = (await DB.query(
+    `
+          SELECT DISTINCT 
+            DATE_FORMAT(date, '%d.%m.%Y') AS \`date_str\`
+          FROM ??
+          ORDER BY date DESC
+          LIMIT ?
+      `,
+    ["reportdb.dataacdcms", period.length + 1]
   )).data;
 
   let days_notes = period.length;
@@ -94,6 +135,20 @@ module.exports = async (chat, bot) => {
   let cuvo_status = "<span style='color: green'>OK</span>";
   let cuvo_status_codes = [];
   let cuvo_status_info = "";
+
+  let days_omnichat = period.length;
+  let sum_omnichat = 0;
+  let omnichat_status = "<span style='color: green'>OK</span>";
+  let omnichat_status_codes = [];
+  let omnichat_status_info = "";
+
+  let reportday_status = "<span style='color: green'>OK</span>";
+  let reportday_status_codes = [];
+  let reportday_status_info = "";
+
+  let traffic_status = "<span style='color: green'>OK</span>";
+  let traffic_status_codes = [];
+  let traffic_status_info = "";
 
   for (let row of notes) {
     if (row.date_str !== today) {
@@ -119,6 +174,14 @@ module.exports = async (chat, bot) => {
     }
   }
 
+  for (let row of omnichat) {
+    if (row.date_str !== today || row.date_str !== yesterday) {
+      sum_omnichat += row.count;
+    } else {
+      days_omnichat--;
+    }
+  }
+
   for (let date of period) {
     let notes_code = 2;
     let notes_deviation = 0;
@@ -126,6 +189,15 @@ module.exports = async (chat, bot) => {
     let tickets_deviation = 0;
     let cuvo_code = 2;
     let cuvo_deviation = 0;
+    let omnichat_code = 2;
+    let omnichat_deviation = 0;
+    let reportday_code = 2;
+    let traffic_code = 2;
+
+    if (date === yesterday) {
+      // не учитывать вчерашний день
+      omnichat_code = 0;
+    }
 
     for (let row of notes) {
       if (row.date_str !== today) {
@@ -177,9 +249,41 @@ module.exports = async (chat, bot) => {
       }
     }
 
+    for (let row of omnichat) {
+      if (row.date_str !== today && row.date_str !== yesterday) {
+        if (row.date_str === date) {
+          omnichat_deviation =
+            Math.round(
+              Math.abs(1 - row.count / (sum_omnichat / days_omnichat)) * 100
+            ) / 100;
+
+          if (omnichat_deviation > valid_deviation) {
+            omnichat_code = 1;
+          } else {
+            omnichat_code = 0;
+          }
+        }
+      }
+    }
+
+    for (let row of reportday) {
+      if (row.date_str === date) {
+        reportday_code = 0;
+      }
+    }
+
+    for (let row of traffic) {
+      if (row.date_str === date) {
+        traffic_code = 0;
+      }
+    }
+
     notes_status_codes.push(notes_code);
     tickets_status_codes.push(tickets_code);
     cuvo_status_codes.push(cuvo_code);
+    omnichat_status_codes.push(omnichat_code);
+    reportday_status_codes.push(reportday_code);
+    traffic_status_codes.push(traffic_code);
 
     if (notes_code === 2) {
       if (notes_status_info.length)
@@ -219,6 +323,31 @@ module.exports = async (chat, bot) => {
         cuvo_status_info += `За ${date} отклонение от среднего значения более 30% (${cuvo_deviation *
           100}%)`;
     }
+
+    if (omnichat_code === 2) {
+      if (omnichat_status_info.length)
+        omnichat_status_info += `<br />Отсутствуют данные за ${date}`;
+      else omnichat_status_info += `Отсутствуют данные за ${date}`;
+    } else if (omnichat_code === 1) {
+      if (omnichat_status_info.length)
+        omnichat_status_info += `<br />За ${date} отклонение от среднего значения более 30% (${omnichat_deviation *
+          100}%)`;
+      else
+        omnichat_status_info += `За ${date} отклонение от среднего значения более 30% (${omnichat_deviation *
+          100}%)`;
+    }
+
+    if (reportday_code === 2) {
+      if (reportday_status_info.length)
+        reportday_status_info += `<br />Отсутствуют данные за ${date}`;
+      else reportday_status_info += `Отсутствуют данные за ${date}`;
+    }
+
+    if (traffic_code === 2) {
+      if (traffic_status_info.length)
+        traffic_status_info += `<br />Отсутствуют данные за ${date}`;
+      else traffic_status_info += `Отсутствуют данные за ${date}`;
+    }
   }
 
   if (notes_status_codes.indexOf(2) !== -1)
@@ -236,6 +365,17 @@ module.exports = async (chat, bot) => {
   else if (cuvo_status_codes.indexOf(1) !== -1)
     cuvo_status = "<span style='color: orange'>Внимание</span>";
 
+  if (omnichat_status_codes.indexOf(2) !== -1)
+    omnichat_status = "<span style='color: red'>Проблема</span>";
+  else if (omnichat_status_codes.indexOf(1) !== -1)
+    omnichat_status = "<span style='color: orange'>Внимание</span>";
+
+  if (reportday_status_codes.indexOf(2) !== -1)
+    reportday_status = "<span style='color: red'>Проблема</span>";
+
+  if (traffic_status_codes.indexOf(2) !== -1)
+    traffic_status = "<span style='color: red'>Проблема</span>";
+
   const title = "Результаты мониторинга ежедневной отчетности";
   const data = [
     {
@@ -252,6 +392,21 @@ module.exports = async (chat, bot) => {
       Отчет: "CuVo",
       Статус: cuvo_status,
       Комментарий: cuvo_status_info
+    },
+    {
+      Отчет: "Омничат",
+      Статус: omnichat_status,
+      Комментарий: omnichat_status_info
+    },
+    {
+      Отчет: "ReportDay",
+      Статус: reportday_status,
+      Комментарий: reportday_status_info
+    },
+    {
+      Отчет: "Трафик перелив",
+      Статус: traffic_status,
+      Комментарий: traffic_status_info
     }
   ];
 
