@@ -3,7 +3,7 @@
  * @author Nikita Bersenev
  */
 
-module.exports = async (chat, bot) => {
+module.exports = async (bot, chat = false) => {
   const fs = require("fs");
 
   // Период проверки данных
@@ -38,7 +38,7 @@ module.exports = async (chat, bot) => {
     .subtract(1, "d")
     .format("DD.MM.YYYY");
 
-  bot.sendMessage(chat.id, "Проверяю заметки...");
+  if (chat) bot.sendMessage(chat.id, "Проверяю заметки...");
   const notes = (await DB.query(
     `
         SELECT
@@ -52,7 +52,7 @@ module.exports = async (chat, bot) => {
     ["reportdb.dataumbnotes", period.length + 1]
   )).data;
 
-  bot.sendMessage(chat.id, "Проверяю тикеты...");
+  if (chat) bot.sendMessage(chat.id, "Проверяю тикеты...");
   const tickets = (await DB.query(
     `
           SELECT
@@ -66,7 +66,7 @@ module.exports = async (chat, bot) => {
     ["reportdb.databpmaccidents", period.length + 1]
   )).data;
 
-  bot.sendMessage(chat.id, "Проверяю CuVo...");
+  if (chat) bot.sendMessage(chat.id, "Проверяю CuVo...");
   const cuvo = (await DB.query(
     `
           SELECT
@@ -80,7 +80,7 @@ module.exports = async (chat, bot) => {
     ["reportdb.datacuvocommon2q", period.length + 1]
   )).data;
 
-  bot.sendMessage(chat.id, "Проверяю Омничат...");
+  if (chat) bot.sendMessage(chat.id, "Проверяю Омничат...");
   const omnichat = (await DB.query(
     `
         SELECT
@@ -94,7 +94,7 @@ module.exports = async (chat, bot) => {
     ["reportdb.dataomnichat", period.length + 1]
   )).data;
 
-  bot.sendMessage(chat.id, "Проверяю ReportDay...");
+  if (chat) bot.sendMessage(chat.id, "Проверяю ReportDay...");
   const reportday = (await DB.query(
     `
         SELECT DISTINCT 
@@ -106,7 +106,7 @@ module.exports = async (chat, bot) => {
     ["reportdb.dataskillday", period.length + 1]
   )).data;
 
-  bot.sendMessage(chat.id, "Проверяю трафик перелив...");
+  if (chat) bot.sendMessage(chat.id, "Проверяю трафик перелив...");
   const traffic = (await DB.query(
     `
           SELECT DISTINCT 
@@ -416,9 +416,21 @@ module.exports = async (chat, bot) => {
       filename: title,
       contentType: "image/png"
     };
-    await bot.sendPhoto(chat.id, fs.readFileSync(image), {}, options);
-    await bot.finish(chat.id);
+    if (chat) {
+      await bot.sendPhoto(chat.id, fs.readFileSync(image), {}, options);
+      await bot.finish(chat.id);
+    } else {
+      await bot.sendAll("Я тут планово проверил дневные отчеты 😊");
+      await bot.sendPhotoAll(fs.readFileSync(image), {}, options);
+    }
   } catch (err) {
-    bot.sendMessage(chat.id, err.message);
+    if (chat) {
+      bot.sendMessage(chat.id, err.message);
+    } else {
+      await bot.sendAll(
+        "Я тут планово решил проверить дневные отчеты, но у меня не получилось 😓"
+      );
+      await bot.sendAll(err.message);
+    }
   }
 };

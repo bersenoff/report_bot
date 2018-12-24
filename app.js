@@ -1,7 +1,10 @@
 require("dotenv").config();
 const Agent = require("socks5-https-client/lib/Agent");
 const TelegramBot = require("node-telegram-bot-api");
+const CronJob = require("cron").CronJob;
 const temp = require("./templates");
+const Models = require("./models");
+const User = Models.Bot_user;
 
 global.appRoot = __dirname;
 global.api = require("./api");
@@ -19,6 +22,16 @@ const bot = new TelegramBot(process.env.TOKEN, {
     }
   }
 });
+
+new CronJob(
+  "0 0 7 * * *",
+  () => {
+    api.reports.check(bot);
+  },
+  null,
+  true,
+  "Europe/Moscow"
+);
 
 bot.on("message", async data => {
   if (await api.system.auth(data.chat)) {
@@ -56,7 +69,7 @@ bot.on("message", async data => {
         break;
       case "/check":
         await bot.hard(data.chat.id);
-        await api.reports.check(data.chat, bot);
+        await api.reports.check(bot, data.chat);
         break;
       default:
         if (data.text.toLowerCase().indexOf("/sql") !== -1) {
@@ -121,4 +134,28 @@ bot.dialog = (chatId, text) => {
     });
   }
   return found;
+};
+
+bot.sendAll = async text => {
+  const users = await User.findAll({
+    where: {
+      allow: true
+    }
+  });
+
+  for (let user of users) {
+    bot.sendMessage(user.id_telegram, text);
+  }
+};
+
+bot.sendPhotoAll = async (image, settings, options) => {
+  const users = await User.findAll({
+    where: {
+      allow: true
+    }
+  });
+
+  for (let user of users) {
+    bot.sendPhoto(user.id_telegram, image, settings, options);
+  }
 };
