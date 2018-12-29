@@ -75,11 +75,13 @@ bot.on("message", async data => {
         if (data.text.toLowerCase().indexOf("/sql") !== -1) {
           await bot.understand(data.chat.id);
           await api.system.query(data, bot);
+        } else if (data.text.toLowerCase().indexOf("/cscript") !== -1) {
+          await api.system.cscript(data, bot);
         } else if (!bot.dialog(data.chat.id, data.text)) {
           bot.sendMessage(
             data.chat.id,
             temp.outgoing.other[
-              Math.floor(Math.random() * temp.outgoing.other.length)
+            Math.floor(Math.random() * temp.outgoing.other.length)
             ]
           );
         }
@@ -97,7 +99,7 @@ bot.understand = chatId => {
   bot.sendMessage(
     chatId,
     temp.outgoing.understand[
-      Math.floor(Math.random() * temp.outgoing.understand.length)
+    Math.floor(Math.random() * temp.outgoing.understand.length)
     ]
   );
 };
@@ -113,7 +115,7 @@ bot.finish = chatId => {
   bot.sendMessage(
     chatId,
     temp.outgoing.finish[
-      Math.floor(Math.random() * temp.outgoing.finish.length)
+    Math.floor(Math.random() * temp.outgoing.finish.length)
     ]
   );
 };
@@ -127,7 +129,7 @@ bot.dialog = (chatId, text) => {
         bot.sendMessage(
           chatId,
           temp.outgoing[key][
-            Math.floor(Math.random() * temp.outgoing[key].length)
+          Math.floor(Math.random() * temp.outgoing[key].length)
           ]
         );
       }
