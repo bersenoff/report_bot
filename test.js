@@ -1,7 +1,16 @@
 (async () => {
     const child_process = require('child_process');
 
-    const result = await child_process.execSync('cscript pkOmniChat.vbs', { cwd: 'D:\\SQLReporting\\test\\VBScripts' }).toString();
+    child_process.exec('cscript pkOmniChat.vbs', { cwd: 'D:\\SQLReporting\\test\\VBScripts' }, (error, stdout, stderr) => {
+        if (error) {
+            console.log(`Ошибка командной строки: ${error}`);
+            return;
+        }
 
-    console.log(result);
+        if (stderr.length) {
+            console.log(`Ошибка в скрипте: ${stderr}`);
+        }
+
+        console.log(stdout);
+    });
 })();
