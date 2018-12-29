@@ -1,8 +1,10 @@
 {
   "dependencies": {
     "axios": "^0.18.0",
+    "child_process": "^1.0.2",
     "cron": "^1.6.0",
     "dotenv": "^6.2.0",
+    "exec": "^0.2.1",
     "fs": "0.0.1-security",
     "moment": "^2.22.2",
     "mysql": "^2.16.0",
