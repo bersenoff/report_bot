@@ -5,4 +5,8 @@
     cscript.stdout.on('data', (data) => {
         console.log(data.toString());
     });
+
+    cscript.stderr.on('data', (data) => {
+        console.log(data.toString());
+    });
 })();
