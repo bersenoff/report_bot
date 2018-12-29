@@ -1,16 +1,8 @@
 (async () => {
-    const child_process = require('child_process');
+    const spawn = require('child_process').spawn;
+    const cscript = spawn('cscript pkOmniChat.vbs', [], { cwd: 'D:\\SQLReporting\\test\\VBScripts' });
 
-    child_process.exec('cscript pkOmniChat.vbs', { cwd: 'D:\\SQLReporting\\test\\VBScripts' }, (error, stdout, stderr) => {
-        if (error) {
-            console.log(`Ошибка командной строки: ${error}`);
-            return;
-        }
-
-        if (stderr.length) {
-            console.log(`Ошибка в скрипте: ${stderr}`);
-        }
-
-        console.log(stdout);
+    cscript.stdout.on('data', (data) => {
+        console.log(data.toString());
     });
 })();
