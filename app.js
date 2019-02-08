@@ -71,6 +71,9 @@ bot.on("message", async data => {
         await bot.hard(data.chat.id);
         await api.reports.check(bot, data.chat);
         break;
+      case "/say":
+        await bot.sendAll(data.text);
+        break;
       default:
         if (data.text.toLowerCase().indexOf("/sql") !== -1) {
           await bot.understand(data.chat.id);
