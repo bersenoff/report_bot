@@ -71,15 +71,15 @@ bot.on("message", async data => {
         await bot.hard(data.chat.id);
         await api.reports.check(bot, data.chat);
         break;
-      case "/say":
-        await bot.sendAll(data.text);
-        break;
       default:
         if (data.text.toLowerCase().indexOf("/sql") !== -1) {
           await bot.understand(data.chat.id);
           await api.system.query(data, bot);
         } else if (data.text.toLowerCase().indexOf("/cscript") !== -1) {
           await api.system.cscript(data, bot);
+        }
+        else if (data.text.toLowerCase().indexOf("/cscript") !== -1) {
+          await bot.sendAll(data.text.replace("/say", ""));
         } else if (!bot.dialog(data.chat.id, data.text)) {
           bot.sendMessage(
             data.chat.id,
