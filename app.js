@@ -78,7 +78,7 @@ bot.on("message", async data => {
         } else if (data.text.toLowerCase().indexOf("/cscript") !== -1) {
           await api.system.cscript(data, bot);
         }
-        else if (data.text.toLowerCase().indexOf("/cscript") !== -1) {
+        else if (data.text.toLowerCase().indexOf("/say") !== -1) {
           await bot.sendAll(data.text.replace("/say", ""));
         } else if (!bot.dialog(data.chat.id, data.text)) {
           bot.sendMessage(
