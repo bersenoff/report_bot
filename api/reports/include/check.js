@@ -49,7 +49,7 @@ module.exports = async (bot, chat = false) => {
         ORDER BY date DESC
         LIMIT ?
       `,
-    ["reportdb.dataumbnotes", period.length + 1]
+    ["reportdb.datacrmnotes", period.length + 1]
   )).data;
 
   if (chat) bot.sendMessage(chat.id, "Проверяю тикеты...");
