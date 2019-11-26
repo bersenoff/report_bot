@@ -15,7 +15,7 @@ module.exports = async (chat, bot) => {
     ORDER BY date DESC 
     LIMIT 7
   `,
-    ["reportdb.dataumbnotes"]
+    ["reportdb.datacrmnotes"]
   )).data;
 
   const title = "Сводный отчет по количеству заметок за последнюю неделю";
