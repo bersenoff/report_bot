@@ -40,6 +40,7 @@ module.exports = (sequelize, Sequelize) => {
       }
     },
     {
+      underscored: true,
       indexes: [
         {
           unique: true,
